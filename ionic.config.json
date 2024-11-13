@@ -1,0 +1,7 @@
+{
+  "name": "Pizzawebsite",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
