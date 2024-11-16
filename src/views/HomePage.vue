@@ -15,8 +15,8 @@
         <div id="shopping-cart">
           <h2>Dein Warenkorb</h2>
           <ion-list>
-            <ion-item v-for="product in cart">
-              <p>{{ product }}</p>
+            <ion-item v-for="(quantity, productName) in cart" :key="productName">
+              <p>{{ productName }} - {{ quantity }} Stück</p>
             </ion-item>
           </ion-list>
         </div>
@@ -32,8 +32,8 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 
 const products = ref([]);
-const cart = ref([]);
-const totalPrice = ref(0);
+const cart = ref({});
+const totalPrice = ref({});
 
 const fetchProducts = async () => {
   try {
@@ -48,7 +48,14 @@ const fetchProducts = async () => {
 const addToCart = (product) => {
   totalPrice.value += product.price;
   console.log(totalPrice.value);
-  cart.value = [...cart.value, product.name];
+
+  // Check if the product ist already in cart
+  if (cart.value[product.name]) {
+    cart.value[product.name] += 1;
+  } else {
+    cart.value[product.name] = 1;
+  }
+
   console.log(cart.value);
 }
 
