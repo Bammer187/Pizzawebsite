@@ -8,12 +8,17 @@
             <h2>{{ product.name }}</h2>
             <p>{{ product.description }}</p>
             <p>{{ product.price }} €</p>
+            <ion-button @click="addToCart(product)">Hinzufügen</ion-button>
           </div>
         </div>
 
         <div id="shopping-cart">
           <h2>Dein Warenkorb</h2>
-
+          <ion-list>
+            <ion-item v-for="product in cart">
+              <p>{{ product }}</p>
+            </ion-item>
+          </ion-list>
         </div>
       </div>
 
@@ -22,12 +27,13 @@
 </template>
 
 <script setup>
-import { IonContent, IonPage } from '@ionic/vue';
+import { IonContent, IonPage, IonButton, IonList, IonItem } from '@ionic/vue';
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 
 const products = ref([]);
 const cart = ref([]);
+const totalPrice = ref(0);
 
 const fetchProducts = async () => {
   try {
@@ -39,8 +45,11 @@ const fetchProducts = async () => {
   }
 }
 
-const addToCart = () => {
-
+const addToCart = (product) => {
+  totalPrice.value += product.price;
+  console.log(totalPrice.value);
+  cart.value = [...cart.value, product.name];
+  console.log(cart.value);
 }
 
 const removeFromCart = () => {
@@ -48,7 +57,7 @@ const removeFromCart = () => {
 }
 
 const increaseAmount = () => {
-  
+
 }
 
 onMounted(fetchProducts);
