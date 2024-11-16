@@ -17,6 +17,7 @@
           <ion-list>
             <ion-item v-for="(quantity, productName) in cart" :key="productName">
               <p>{{ productName }} - {{ quantity }} Stück</p>
+              <p>{{ getProductPrice(productName) }} €</p>
             </ion-item>
           </ion-list>
           <p>Gesamt {{ totalPrice }} €</p>
@@ -58,6 +59,14 @@ const addToCart = (product) => {
   }
 
   console.log(cart.value);
+}
+
+const getProductPrice = (productName) => {
+  const product = products.value.find(p => p.name === productName); // Find the product by name
+  if (product) {
+    return product.price * cart.value[productName]; // price * amount
+  }
+  return 0;
 }
 
 const removeFromCart = () => {
