@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
-import HomePage from '../views/HomePage.vue'
 
 const routes = [
   {
@@ -7,10 +6,19 @@ const routes = [
     redirect: '/home'
   },
   {
+    path: '',
+    redirect: '/home'
+  },
+  {
     path: '/home',
     name: 'Home',
-    component: HomePage
-  }
+    component: () => import('@/views/HomePage.vue'),
+  },
+  {
+    path: '/payment',
+    name: 'Payment',
+    component: () => import('@/views/Payment.vue'),
+  },
 ]
 
 const router = createRouter({
