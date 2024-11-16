@@ -19,6 +19,7 @@
               <p>{{ productName }} - {{ quantity }} Stück</p>
             </ion-item>
           </ion-list>
+          <p>Gesamt {{ totalPrice }} €</p>
         </div>
       </div>
 
@@ -33,7 +34,7 @@ import { ref, onMounted } from 'vue';
 
 const products = ref([]);
 const cart = ref({});
-const totalPrice = ref({});
+const totalPrice = ref(0);
 
 const fetchProducts = async () => {
   try {
