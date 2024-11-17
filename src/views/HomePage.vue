@@ -120,11 +120,14 @@ const removeFromCart = (amount, productName) => {
   }
 
   cart.value[productName] -= amount;
-  //if (cart.value[productName] <= 0) {
-    //delete cart.value[productName];
-  //}
+  if (cart.value[productName] <= 0) {
+    delete cart.value[productName];
+  }
 
   calculateTotalPrice();
+  if (Object.keys(cart.value).length === 0) {
+    itemsInCart.value = false;
+  }
 }
 
 /**
