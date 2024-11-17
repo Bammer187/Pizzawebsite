@@ -12,25 +12,44 @@
         </div>
 
         <div id="shopping-cart" class="shopping-cart">
-          <h2>Warenkorb</h2>
-          <ion-list>
-            <ion-item v-for="(quantity, productName) in cart" :key="productName">
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="4">
-                    <ion-label>{{ quantity }}x</ion-label>
-                  </ion-col>
-                  <ion-col size="4">
-                    <ion-label>{{ productName }}</ion-label>
-                  </ion-col>
-                  <ion-col size="4">
-                    <ion-label>{{ getProductPrice(productName).toFixed(2) }} €</ion-label>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-          </ion-list>
-          <p>Gesamt: {{ totalPrice.toFixed(2) }} €</p>
+          <ion-title>Deine Bestellung</ion-title>
+          <div v-if="itemsInCart">
+            <ion-list lines="none">
+              <ion-item v-for="(quantity, productName) in cart" :key="productName">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="1">
+                      <ion-label>{{ quantity }}x</ion-label>
+                    </ion-col>
+                    <ion-col size="4">
+                      <ion-label>{{ productName }}</ion-label>
+                    </ion-col>
+                    <ion-col size="2">
+                      <ion-button>
+                        <ion-icon :icon="add"></ion-icon>
+                      </ion-button>
+                      <ion-button>
+                        <ion-icon :icon="remove"></ion-icon>
+                      </ion-button>
+                    </ion-col>
+                    <ion-col size="2">
+                      <ion-label>{{ getProductPrice(productName).toFixed(2) }} €</ion-label>
+                    </ion-col>
+                    <ion-col size="1">
+                      <ion-button>
+                        <ion-icon :icon="trashOutline"></ion-icon>
+                      </ion-button>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+            </ion-list>
+            <ion-label>Gesamt: {{ totalPrice.toFixed(2) }} €</ion-label>
+          </div>
+
+          <div v-else>
+            <ion-icon :icon="cartOutline" style="font-size: 100px;"></ion-icon>
+          </div>
         </div>
       </div>
     </ion-content>
@@ -38,13 +57,15 @@
 </template>
 
 <script setup>
-import { IonContent, IonPage, IonButton, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/vue';
+import { IonContent, IonPage, IonButton, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol, IonIcon, IonTitle } from '@ionic/vue';
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import { cartOutline, add, remove, trashOutline } from 'ionicons/icons'; 
 
 const products = ref([]);
 const cart = ref({});
 const totalPrice = ref(0);
+const itemsInCart = ref(false);
 
 const fetchProducts = async () => {
   try {
@@ -63,6 +84,7 @@ const fetchProducts = async () => {
 const addToCart = (product) => {
   totalPrice.value += product.price;
   console.log(totalPrice.value);
+  itemsInCart.value = true;
 
   // Check if the product is already in the cart
   if (cart.value[product.name]) {
@@ -86,8 +108,12 @@ const getProductPrice = (productName) => {
   return 0;
 }
 
-const removeFromCart = () => {
-
+/**
+ * Removes a proudct from the Cart.
+ * @param amount How many times the item should be removed
+ */
+const removeFromCart = (amount) => {
+  
 }
 
 const increaseAmount = () => {
