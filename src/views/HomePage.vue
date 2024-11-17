@@ -25,10 +25,10 @@
                       <ion-label>{{ productName }}</ion-label>
                     </ion-col>
                     <ion-col size="2">
-                      <ion-button>
+                      <ion-button @click="increaseAmount(productName)">
                         <ion-icon :icon="add"></ion-icon>
                       </ion-button>
-                      <ion-button>
+                      <ion-button @click="removeFromCart(1, productName)">
                         <ion-icon :icon="remove"></ion-icon>
                       </ion-button>
                     </ion-col>
@@ -36,7 +36,7 @@
                       <ion-label>{{ getProductPrice(productName).toFixed(2) }} €</ion-label>
                     </ion-col>
                     <ion-col size="1">
-                      <ion-button>
+                      <ion-button @click="removeFromCart(quantity, productName)">
                         <ion-icon :icon="trashOutline"></ion-icon>
                       </ion-button>
                     </ion-col>
@@ -82,7 +82,6 @@ const fetchProducts = async () => {
  * @param product JSON String from db with all information regarding the product
  */
 const addToCart = (product) => {
-  totalPrice.value += product.price;
   console.log(totalPrice.value);
   itemsInCart.value = true;
 
@@ -92,6 +91,7 @@ const addToCart = (product) => {
   } else {
     cart.value[product.name] = 1;
   }
+  calculateTotalPrice();
 
   console.log(cart.value);
 }
@@ -111,13 +111,39 @@ const getProductPrice = (productName) => {
 /**
  * Removes a proudct from the Cart.
  * @param amount How many times the item should be removed
+ * @param productName Name of the product you want to reduce
  */
-const removeFromCart = (amount) => {
-  
+const removeFromCart = (amount, productName) => {
+  if (!cart.value || !cart.value[productName]) {
+    console.warn(`Produkt "${productName}" ist nicht im Warenkorb oder cart ist undefined.`);
+    return;
+  }
+
+  cart.value[productName] -= amount;
+  //if (cart.value[productName] <= 0) {
+    //delete cart.value[productName];
+  //}
+
+  calculateTotalPrice();
 }
 
-const increaseAmount = () => {
+/**
+ * Increases the amount the product by one.
+ * @param productName Name of the product which will be increased
+ */
+const increaseAmount = (productName) => {
+  cart.value[productName] += 1;
+  calculateTotalPrice();
+}
 
+/**
+ * Calculates the total, combined price of all products currently in the cart.
+ */
+const calculateTotalPrice = () => {
+  totalPrice.value = 0;
+  for (const name of Object.keys(cart.value)) {
+    totalPrice.value += getProductPrice(name);
+  }
 }
 
 onMounted(fetchProducts);
