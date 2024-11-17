@@ -49,7 +49,9 @@
 
           <div v-else>
             <ion-icon :icon="cartOutline" style="font-size: 100px;"></ion-icon>
+            <ion-label>Wähle eine Pizza aus der Karte und bestell sie!</ion-label>
           </div>
+          <ion-button :disabled="!itemsInCart" @click="goto('/payment')">Bestellen</ion-button>
         </div>
       </div>
     </ion-content>
@@ -61,6 +63,13 @@ import { IonContent, IonPage, IonButton, IonList, IonItem, IonLabel, IonGrid, Io
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { cartOutline, add, remove, trashOutline } from 'ionicons/icons'; 
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const goto = (path) => {
+  router.push(path);
+};
 
 const products = ref([]);
 const cart = ref({});
