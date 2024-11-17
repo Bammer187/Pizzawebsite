@@ -71,7 +71,6 @@ const fetchProducts = async () => {
   try {
     const response = await axios.get('http://localhost/ionic-pizzawebsite/api.php');
     products.value = response.data;
-    console.log('Produkte geladen:', products.value);
   } catch (error) {
     console.error('Fehler beim Abrufen der Produkte:', error);
   }
@@ -82,7 +81,6 @@ const fetchProducts = async () => {
  * @param product JSON String from db with all information regarding the product
  */
 const addToCart = (product) => {
-  console.log(totalPrice.value);
   itemsInCart.value = true;
 
   // Check if the product is already in the cart
@@ -92,8 +90,6 @@ const addToCart = (product) => {
     cart.value[product.name] = 1;
   }
   calculateTotalPrice();
-
-  console.log(cart.value);
 }
 
 /**
@@ -114,17 +110,21 @@ const getProductPrice = (productName) => {
  * @param productName Name of the product you want to reduce
  */
 const removeFromCart = (amount, productName) => {
+  //Cheks if the product ist in the cart
   if (!cart.value || !cart.value[productName]) {
     console.warn(`Produkt "${productName}" ist nicht im Warenkorb oder cart ist undefined.`);
     return;
   }
 
+  //Reduces the value by amount and if the value is <= 0 deletes the key from cart
   cart.value[productName] -= amount;
   if (cart.value[productName] <= 0) {
     delete cart.value[productName];
   }
 
   calculateTotalPrice();
+
+  //Checks if cart is empty
   if (Object.keys(cart.value).length === 0) {
     itemsInCart.value = false;
   }
