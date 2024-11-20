@@ -170,11 +170,11 @@ onMounted(fetchProducts);
 </script>
 
 <style scoped>
-.main-layout {
+
+#main-layout {
   display: flex;
   flex-direction: row;
-  gap: 20px;
-  padding: 16px;
+  justify-content: space-between;
 }
 
 .pizza-list {
@@ -225,23 +225,5 @@ ion-col {
   .pizza-list {
     background-color: #1e1e1e;
   }
-}
-
-#main-layout {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.pizza-list {
-  flex: 2;
-}
-
-.shopping-cart {
-  flex: 1;
-  background: #f8f8f8;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 </style>
