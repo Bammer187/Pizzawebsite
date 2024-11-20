@@ -68,6 +68,10 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const goto = (path) => {
+  localStorage.setItem('cart', JSON.stringify(cart.value));
+  localStorage.setItem('prices', JSON.stringify(priceJSON.value));
+  console.log(cart.value);
+  console.log(priceJSON.value);
   router.push(path);
 };
 
@@ -75,6 +79,7 @@ const products = ref([]);
 const cart = ref({});
 const totalPrice = ref(0);
 const itemsInCart = ref(false);
+const priceJSON = ref({'total': 0});
 
 const fetchProducts = async () => {
   try {
@@ -108,7 +113,9 @@ const addToCart = (product) => {
 const getProductPrice = (productName) => {
   const product = products.value.find(p => p.name === productName); // Find the product by name
   if (product) {
-    return product.price * cart.value[productName]; // price * amount
+    const price = product.price * cart.value[productName]; // price * amount
+    priceJSON.value[productName] = price;
+    return price;
   }
   return 0;
 }
@@ -155,6 +162,7 @@ const calculateTotalPrice = () => {
   totalPrice.value = 0;
   for (const name of Object.keys(cart.value)) {
     totalPrice.value += getProductPrice(name);
+    priceJSON.value["total"] = totalPrice.value;
   }
 }
 
