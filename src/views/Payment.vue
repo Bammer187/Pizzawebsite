@@ -1,7 +1,8 @@
 <template>
   <div id="main-layout">
     <div id="payment-information">
-      <PaymentInformation/>
+      <PaymentInformation v-model:inputFields="inputFields"/>
+      <ion-button @click="confirmOrder"></ion-button>
     </div>
     <div id="shopping-cart" class="shopping-cart">
       <ion-title>Deine Bestellung</ion-title>
@@ -28,12 +29,26 @@
 </template>
 
 <script setup>
-  import { IonList, IonItem, IonGrid, IonRow, IonCol, IonLabel, IonTitle } from '@ionic/vue';
+  import { IonList, IonItem, IonGrid, IonRow, IonCol, IonLabel, IonButton, IonTitle } from '@ionic/vue';
   import { ref, onMounted } from 'vue';
   import PaymentInformation from '../../components/PaymentInformation.vue';
 
   const cart = ref({});
   const prices = ref({ "total": 0 });
+  const inputFields = ref({
+    Adresse: '',
+    Postleitzahl: '',
+    Stadt: '',
+    Vorname: '',
+    Nachname: '',
+    Telefon: '',
+    Email: '',
+  });
+
+  const confirmOrder = () => {
+    console.log(inputFields.value);
+    console.log(prices.value);
+  }
 
   onMounted(() => {
       const cartData = localStorage.getItem('cart');

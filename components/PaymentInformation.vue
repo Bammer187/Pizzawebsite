@@ -83,17 +83,12 @@
 </template>
 
 <script setup>
-  import { IonItem, IonInput, IonList, IonGrid, IonRow, IonCol, IonButton } from '@ionic/vue';
-  import { ref } from 'vue';
+  import { IonItem, IonInput, IonList, IonGrid, IonRow, IonCol } from '@ionic/vue';
 
-  // Dynamische Eingabefelder-Definition
-  const inputFields = ref({
-    Adresse: '',
-    Postleitzahl: null,
-    Stadt: '',
-    Vorname: '',
-    Nachname: '',
-    Telefon: null,
-    Email: '',
+  const props = defineProps({
+    inputFields: {
+      type: Object,
+      required: true,
+    },
   });
 </script>
