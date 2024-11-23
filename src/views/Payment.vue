@@ -1,7 +1,7 @@
 <template>
   <div id="main-layout">
     <div id="payment-information">
-    <p>Placeholder</p>
+      <PaymentInformation/>
     </div>
     <div id="shopping-cart" class="shopping-cart">
       <ion-title>Deine Bestellung</ion-title>
@@ -9,13 +9,13 @@
         <ion-item v-for="(quantity, productName) in cart" :key="productName">
           <ion-grid>
             <ion-row>
-              <ion-col size="4">
+              <ion-col size="3">
                 <ion-label>{{ quantity }}x</ion-label>
               </ion-col>
-              <ion-col size="4">
+              <ion-col size="3">
                 <ion-label>{{ productName }}</ion-label>
-              </ion-col>
-              <ion-col size="4">
+              </ion-col>  
+              <ion-col size="3">
                 <ion-label>{{ prices[productName].toFixed(2) }} €</ion-label>
               </ion-col>
             </ion-row>
@@ -28,8 +28,9 @@
 </template>
 
 <script setup>
-  import { IonList, IonItem, IonGrid, IonRow, IonCol, IonLabel, IonTitle } from '@ionic/vue'
+  import { IonList, IonItem, IonGrid, IonRow, IonCol, IonLabel, IonTitle } from '@ionic/vue';
   import { ref, onMounted } from 'vue';
+  import PaymentInformation from '../../components/PaymentInformation.vue';
 
   const cart = ref({});
   const prices = ref({ "total": 0 });
@@ -51,6 +52,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin-top: 20px
   }
 
   .payment-information {
