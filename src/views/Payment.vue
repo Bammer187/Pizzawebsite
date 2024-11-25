@@ -32,6 +32,7 @@
   import { IonList, IonItem, IonGrid, IonRow, IonCol, IonLabel, IonButton, IonTitle } from '@ionic/vue';
   import { ref, onMounted } from 'vue';
   import PaymentInformation from '../../components/PaymentInformation.vue';
+  import axios from 'axios';
 
   const cart = ref({});
   const prices = ref({ "total": 0 });
@@ -45,9 +46,27 @@
     Email: '',
   });
 
+  const sendDataToDatabase = async () => {
+    try {
+        const response = await axios.post(
+            'http://localhost/ionic-pizzawebsite/sendData.php',
+            JSON.stringify(inputFields.value), // Daten in JSON umwandeln
+            {
+                headers: {
+                    'Content-Type': 'application/json' // Header explizit setzen
+                }
+            }
+        );
+    } catch (error) {
+        console.error('Es gab einen Fehler:', error.message);
+    }
+};
+
+
   const confirmOrder = () => {
     console.log(inputFields.value);
     console.log(prices.value);
+    sendDataToDatabase();
   }
 
   onMounted(() => {

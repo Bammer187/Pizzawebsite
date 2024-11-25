@@ -6,7 +6,7 @@
           <div v-for="product in products" :key="product.id" class="product-item">
             <h2>{{ product.name }}</h2>
             <p>{{ product.description }}</p>
-            <p>{{ product.price.toFixed(2) }} €</p>
+            <p>{{ product.price }} €</p>
             <ion-button @click="addToCart(product)">Hinzufügen</ion-button>
           </div>
         </div>
