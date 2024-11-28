@@ -10,10 +10,6 @@
           v-model="inputFields.Adresse">
           </ion-input>
         </ion-row>
-      </ion-grid>
-    </ion-item>
-    <ion-item>
-      <ion-grid>
         <ion-row>
           <ion-col>
             <ion-input
@@ -32,10 +28,6 @@
           </ion-input>
           </ion-col>
         </ion-row>
-      </ion-grid>
-    </ion-item>
-    <ion-item>
-      <ion-grid>
         <ion-row>
           <ion-col>
             <ion-input
@@ -54,10 +46,6 @@
           </ion-input>
           </ion-col>
         </ion-row>
-      </ion-grid>
-    </ion-item>
-    <ion-item>
-      <ion-grid>
         <ion-row>
           <ion-col>
             <ion-input 

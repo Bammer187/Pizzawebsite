@@ -6,7 +6,7 @@
           <div v-for="product in products" :key="product.id" class="product-item">
             <h2>{{ product.name }}</h2>
             <p>{{ product.description }}</p>
-            <p>{{ product.price }} €</p>
+            <p>{{ Number(product.price).toFixed(2) }} €</p>
             <ion-button @click="addToCart(product)">Hinzufügen</ion-button>
           </div>
         </div>
@@ -85,6 +85,7 @@ const fetchProducts = async () => {
   try {
     const response = await axios.get('http://localhost/ionic-pizzawebsite/api.php');
     products.value = response.data;
+    console.log(products.value);
   } catch (error) {
     console.error('Fehler beim Abrufen der Produkte:', error);
   }

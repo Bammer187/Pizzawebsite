@@ -36,6 +36,13 @@
 
   const cart = ref({});
   const prices = ref({ "total": 0 });
+  const order = ref({
+    "total": 0,
+    "date": '',
+    "CustomerInfo": {},
+    "pizzas": {},
+  });
+
   const inputFields = ref({
     Adresse: '',
     Postleitzahl: '',
@@ -46,14 +53,14 @@
     Email: '',
   });
 
-  const sendDataToDatabase = async () => {
+  const sendDataToDatabase = async (data) => {
     try {
         const response = await axios.post(
             'http://localhost/ionic-pizzawebsite/sendData.php',
-            JSON.stringify(inputFields.value), // Daten in JSON umwandeln
+            JSON.stringify(data),
             {
                 headers: {
-                    'Content-Type': 'application/json' // Header explizit setzen
+                    'Content-Type': 'application/json'
                 }
             }
         );
@@ -64,9 +71,16 @@
 
 
   const confirmOrder = () => {
-    console.log(inputFields.value);
-    console.log(prices.value);
-    sendDataToDatabase();
+    order.value["pizzas"] = JSON.parse(JSON.stringify(cart.value));
+    order.value["total"] = prices.value["total"];
+    order.value["CustomerInfo"] = inputFields.value;
+
+    const date = new Date();
+    const currentDate = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' '
+                      + date.getHours() + ':' + date.getMinutes() + ":" + date.getSeconds();
+    order.value["date"] = currentDate;
+
+    sendDataToDatabase(order.value);
   }
 
   onMounted(() => {
@@ -75,9 +89,6 @@
 
       cart.value = cartData ? JSON.parse(cartData) : {};
       prices.value = pricesData ? JSON.parse(pricesData) : {"total": 0};
-
-      console.log(cart.value)
-      console.log(prices.value);
   });
 </script>
 
