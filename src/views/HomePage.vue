@@ -20,13 +20,13 @@
           <div v-if="itemsInCart">
             <ion-list lines="none">
               <ion-item
-                v-for="(quantity, productName) in cart"
+                v-for="(productData, productName) in cart"
                 :key="productName"
               >
                 <ion-grid>
                   <ion-row>
                     <ion-col size="1">
-                      <ion-label>{{ quantity }}x</ion-label>
+                      <ion-label>{{ productData.amount }}x</ion-label>
                     </ion-col>
                     <ion-col size="4">
                       <ion-label>{{ productName }}</ion-label>
@@ -49,7 +49,7 @@
                     </ion-col>
                     <ion-col size="1">
                       <ion-button
-                        @click="removeFromCart(quantity, productName)"
+                        @click="removeFromCart(productData.amount, productName)"
                       >
                         <ion-icon :icon="trashOutline"></ion-icon>
                       </ion-button>
@@ -132,9 +132,13 @@ const addToCart = (product) => {
 
   // Check if the product is already in the cart
   if (cart.value[product.name]) {
-    cart.value[product.name] += 1;
+    cart.value[product.name].amount += 1;
   } else {
-    cart.value[product.name] = 1;
+    
+    cart.value[product.name] = {
+      "id": products.value.find(p => p.name === product.name).id,
+      "amount": 1,
+    };
   }
   calculateTotalPrice();
 };
@@ -146,7 +150,7 @@ const addToCart = (product) => {
 const getProductPrice = (productName) => {
   const product = products.value.find((p) => p.name === productName); // Find the product by name
   if (product) {
-    const price = product.price * cart.value[productName]; // price * amount
+    const price = product.price * cart.value[productName].amount; // price * amount
     priceJSON.value[productName] = price;
     return price;
   }
@@ -168,8 +172,8 @@ const removeFromCart = (amount, productName) => {
   }
 
   //Reduces the value by amount and if the value is <= 0 deletes the key from cart
-  cart.value[productName] -= amount;
-  if (cart.value[productName] <= 0) {
+  cart.value[productName].amount -= amount;
+  if (cart.value[productName].amount <= 0) {
     delete cart.value[productName];
   }
 

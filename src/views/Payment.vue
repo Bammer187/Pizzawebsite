@@ -7,11 +7,11 @@
     <div id="shopping-cart" class="shopping-cart">
       <ion-title>Deine Bestellung</ion-title>
       <ion-list lines="none">
-        <ion-item v-for="(quantity, productName) in cart" :key="productName">
+        <ion-item v-for="(productData, productName) in cart" :key="productName">
           <ion-grid>
             <ion-row>
               <ion-col size="3">
-                <ion-label>{{ quantity }}x</ion-label>
+                <ion-label>{{ productData.amount }}x</ion-label>
               </ion-col>
               <ion-col size="3">
                 <ion-label>{{ productName }}</ion-label>
@@ -97,7 +97,7 @@ const confirmOrder = () => {
     ":" +
     date.getSeconds();
   order.value["date"] = currentDate;
-
+  console.log(order.value);
   sendDataToDatabase(order.value);
 };
 
