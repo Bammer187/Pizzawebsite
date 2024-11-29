@@ -8,10 +8,26 @@
             :key="product.id"
             class="product-item"
           >
-            <h2>{{ product.name }}</h2>
-            <p>{{ product.description }}</p>
-            <p>{{ Number(product.price).toFixed(2) }} €</p>
-            <ion-button @click="addToCart(product)">Hinzufügen</ion-button>
+              <ion-card style="flex: 3">
+                <ion-card-header>
+                  <ion-card-title>{{ product.name }}</ion-card-title>
+                  <ion-card-subtitle>{{
+                    product.description
+                  }}</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                  {{ Number(product.price).toFixed(2) }} €
+                </ion-card-content>
+                <ion-button style="margin-left: 10px; margin-bottom: 10px" @click="addToCart(product)"
+                  >Hinzufügen</ion-button
+                >
+              </ion-card>
+              <img
+                :alt="product.name"
+                :src="`/img/${product.name}.png`"
+                style="flex: 1"
+                width="150px"
+              />
           </div>
         </div>
 
@@ -32,10 +48,16 @@
                       <ion-label>{{ productName }}</ion-label>
                     </ion-col>
                     <ion-col size="auto">
-                      <ion-button shape="round" @click="increaseAmount(productName)">
+                      <ion-button
+                        shape="round"
+                        @click="increaseAmount(productName)"
+                      >
                         <ion-icon slot="icon-only" :icon="add"></ion-icon>
                       </ion-button>
-                      <ion-button shape="round" @click="removeFromCart(1, productName)">
+                      <ion-button
+                        shape="round"
+                        @click="removeFromCart(1, productName)"
+                      >
                         <ion-icon slot="icon-only" :icon="remove"></ion-icon>
                       </ion-button>
                     </ion-col>
@@ -60,14 +82,14 @@
                 </ion-grid>
               </ion-item>
             </ion-list>
-              <ion-row>
-                <ion-col size="7">
-                  <ion-label>Gesamt: </ion-label>
-                </ion-col>
-                <ion-col size="4">
-                  <ion-label>{{ totalPrice.toFixed(2) }} €</ion-label>
-                </ion-col>
-              </ion-row>
+            <ion-row>
+              <ion-col size="7">
+                <ion-label>Gesamt: </ion-label>
+              </ion-col>
+              <ion-col size="4">
+                <ion-label>{{ totalPrice.toFixed(2) }} €</ion-label>
+              </ion-col>
+            </ion-row>
           </div>
 
           <div v-else id="empty-cart">
@@ -76,7 +98,10 @@
               >Wähle eine Pizza aus der Karte und bestell sie!</ion-label
             >
           </div>
-          <ion-button expand="block" :disabled="!itemsInCart" @click="goto('/payment')"
+          <ion-button
+            expand="block"
+            :disabled="!itemsInCart"
+            @click="goto('/payment')"
             >Bestellen</ion-button
           >
         </div>
@@ -98,6 +123,12 @@ import {
   IonCol,
   IonIcon,
   IonTitle,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonThumbnail,
 } from "@ionic/vue";
 import axios from "axios";
 import { ref, onMounted } from "vue";
@@ -140,10 +171,9 @@ const addToCart = (product) => {
   if (cart.value[product.name]) {
     cart.value[product.name].amount += 1;
   } else {
-    
     cart.value[product.name] = {
-      "id": products.value.find(p => p.name === product.name).id,
-      "amount": 1,
+      id: products.value.find((p) => p.name === product.name).id,
+      amount: 1,
     };
   }
   calculateTotalPrice();
@@ -225,6 +255,31 @@ onMounted(fetchProducts);
   flex: 3;
 }
 
+.product-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.product-card {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-image {
+  flex: 1;
+  max-width: 150px;
+  height: auto;
+  object-fit: contain;
+  margin-left: 16px;
+}
+
 #shopping-cart {
   flex: 1;
   align-items: center;
@@ -251,11 +306,6 @@ onMounted(fetchProducts);
   gap: 20px;
 }
 
-#shopping-cart ion-item {
-  margin-bottom: 16px;
-}
-
-/* Standard Styles */
 ion-label {
   font-size: 16px;
 }
@@ -273,7 +323,6 @@ ion-col {
   margin-right: 16px;
 }
 
-/* Dark Mode Styles */
 @media (prefers-color-scheme: dark) {
   #shopping-cart {
     background-color: #333;
@@ -289,8 +338,12 @@ ion-col {
     --color: white;
   }
 
-  .pizza-list {
+  #pizza-list {
     background-color: #1e1e1e;
   }
+  .product-item {
+    border-bottom: 1px solid #444;
+  }
 }
+
 </style>
