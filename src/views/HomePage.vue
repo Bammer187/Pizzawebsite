@@ -13,7 +13,7 @@
                 <ion-card-title>{{ product.name }}</ion-card-title>
                 <ion-card-subtitle>{{ product.description }}</ion-card-subtitle>
               </ion-card-header>
-              <ion-card-content>
+              <ion-card-content class="card-price">
                 {{ Number(product.price).toFixed(2) }} €
               </ion-card-content>
               <ion-button
@@ -291,6 +291,11 @@ onMounted(fetchProducts);
   margin-left: 16px;
 }
 
+.card-price {
+  font-size: 20px;
+  color: black;
+}
+
 #shopping-cart {
   flex: 1;
   align-items: center;
@@ -352,8 +357,13 @@ ion-col {
   #pizza-list {
     background-color: #1e1e1e;
   }
+
   .product-item {
     border-bottom: 1px solid #444;
+  }
+  
+  .card-price {
+    color: #EEEEEE;
   }
 }
 </style>
