@@ -10,6 +10,7 @@
                 id="payment-item"
               />
             </ion-item>
+            <ion-checkbox>Ich akzeptiere die <a href="#" @click="acceptTOC = !acceptTOC">AGBs</a></ion-checkbox>
             <ion-item>
               <ion-button @click="confirmOrder" id="order-button"
                 >Bestellen</ion-button
@@ -70,6 +71,7 @@ import {
   IonLabel,
   IonButton,
   IonTitle,
+  IonCheckbox,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import PaymentInformation from "../../components/PaymentInformation.vue";
@@ -77,6 +79,7 @@ import axios from "axios";
 
 const cart = ref({});
 const prices = ref({ total: 0 });
+const acceptTOC = ref(false);
 const order = ref({
   total: 0,
   date: "",
@@ -167,6 +170,11 @@ onMounted(() => {
 #payment-item {
   width: 1400px;
   margin-right: 16px;
+}
+
+ion-checkbox {
+  margin-left: 42px;
+  margin-bottom: 20px
 }
 
 #order-button {

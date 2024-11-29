@@ -4,14 +4,14 @@
       <ion-grid>
         <ion-row>
           <ion-col>
-          <ion-input
-            fill="outline"
-            label="Adresse"
-            label-placement="floating"
-            v-model="inputFields.Adresse"
-          >
-          </ion-input>
-        </ion-col>
+            <ion-input
+              fill="outline"
+              label="Adresse"
+              label-placement="floating"
+              v-model="inputFields.Adresse"
+            >
+            </ion-input>
+          </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
@@ -61,6 +61,9 @@
               label-placement="floating"
               type="tel"
               v-model="inputFields.Telefon"
+              placeholder="0000 0000 0000"
+              v-maskito="phoneOptions"
+              maxlength="14"
             >
             </ion-input>
           </ion-col>
@@ -71,6 +74,10 @@
               label-placement="floating"
               type="email"
               v-model="inputFields.Email"
+              error-text="Ungültige E-Mail"
+              @ionInput="validate"
+              @ionBlur="markTouched"
+              ref="emailInputRef"
             >
             </ion-input>
           </ion-col>
@@ -89,6 +96,8 @@ import {
   IonRow,
   IonCol,
 } from "@ionic/vue";
+import { maskito as vMaskito } from "@maskito/vue";
+import { ref } from "vue";
 
 const props = defineProps({
   inputFields: {
@@ -96,4 +105,56 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emailInputRef = ref(null);
+
+const validateEmail = (email) => {
+  return (
+    email.match(
+      /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,63})$/
+    ) !== null
+  );
+};
+
+const validate = (ev) => {
+  const target = ev.target;
+  const value = target.value;
+
+  const inputEl = emailInputRef.value?.$el;
+  if (!inputEl) return;
+
+  inputEl.classList.remove("ion-valid", "ion-invalid");
+
+  if (value === "") return;
+
+  validateEmail(value)
+    ? inputEl.classList.add("ion-valid")
+    : inputEl.classList.add("ion-invalid");
+};
+
+const markTouched = () => {
+  const inputEl = emailInputRef.value?.$el;
+  if (inputEl) {
+    inputEl.classList.add("ion-touched");
+  }
+};
+
+const phoneOptions = {
+  mask: [
+    ...Array(4).fill(/\d/),
+    " ",
+    ...Array(4).fill(/\d/),
+    " ",
+    ...Array(5).fill(/\d/),
+    " ",
+  ],
+  elementPredicate: (el) => {
+    return new Promise((resolve) => {
+      requestAnimationFrame(async () => {
+        const input = await el.getInputElement();
+        resolve(input);
+      });
+    });
+  },
+};
 </script>
