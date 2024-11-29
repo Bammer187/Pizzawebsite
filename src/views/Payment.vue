@@ -1,35 +1,67 @@
 <template>
-  <div id="main-layout">
-    <div id="payment-information">
-      <PaymentInformation v-model:inputFields="inputFields" />
-      <ion-button @click="confirmOrder"></ion-button>
-    </div>
-    <div id="shopping-cart" class="shopping-cart">
-      <ion-title>Deine Bestellung</ion-title>
-      <ion-list lines="none">
-        <ion-item v-for="(productData, productName) in cart" :key="productName">
+  <ion-page>
+    <ion-content :fullscreen="true">
+      <div id="main-layout">
+        <div id="payment-information">
+          <ion-list lines="none" id="payment-list">
+            <ion-item>
+              <PaymentInformation
+                v-model:inputFields="inputFields"
+                id="payment-item"
+              />
+            </ion-item>
+            <ion-item>
+              <ion-button @click="confirmOrder" id="order-button"
+                >Bestellen</ion-button
+              >
+            </ion-item>
+          </ion-list>
+        </div>
+        <div id="shopping-cart">
+          <ion-title id="cart-title">Deine Bestellung</ion-title>
+          <ion-list lines="none">
+            <ion-item
+              v-for="(productData, productName) in cart"
+              :key="productName"
+            >
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="3">
+                    <ion-label>{{ productData.amount }}x</ion-label>
+                  </ion-col>
+                  <ion-col size="3">
+                    <ion-label>{{ productName }}</ion-label>
+                  </ion-col>
+                  <ion-col size="3">
+                    <ion-label
+                      >{{ prices[productName].toFixed(2) }} €</ion-label
+                    >
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+          </ion-list>
+
           <ion-grid>
             <ion-row>
               <ion-col size="3">
-                <ion-label>{{ productData.amount }}x</ion-label>
+                <ion-label>Gesamt:</ion-label>
               </ion-col>
-              <ion-col size="3">
-                <ion-label>{{ productName }}</ion-label>
-              </ion-col>
-              <ion-col size="3">
-                <ion-label>{{ prices[productName].toFixed(2) }} €</ion-label>
+              <ion-col size="3" style="padding-left: 135px; white-space: nowrap;">
+                <ion-label>{{ prices["total"].toFixed(2) }} €</ion-label>
               </ion-col>
             </ion-row>
           </ion-grid>
-        </ion-item>
-      </ion-list>
-      <ion-label>Gesamt: {{ prices["total"].toFixed(2) }} €</ion-label>
-    </div>
-  </div>
+        </div>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup>
 import {
+  IonPage,
+  IonContent,
   IonList,
   IonItem,
   IonGrid,
@@ -98,7 +130,7 @@ const confirmOrder = () => {
     date.getSeconds();
   order.value["date"] = currentDate;
   console.log(order.value);
-  sendDataToDatabase(order.value);
+  //sendDataToDatabase(order.value);
 };
 
 onMounted(() => {
@@ -115,19 +147,50 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-top: 20px;
+  height: 100%;
 }
 
-.payment-information {
-  flex: 2;
+#payment-information {
+  height: 100%;
+  flex: 9;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: auto;
 }
 
-.shopping-cart {
-  flex: 1;
+#payment-list {
+  height: 100%;
+  padding-left: 16px;
+}
+
+#payment-item {
+  width: 1400px;
+  margin-right: 16px;
+}
+
+#order-button {
+  width: 400px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 25px;
+}
+
+#shopping-cart {
+  flex: 3;
+  height: 100%;
   background: #f8f8f8;
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#cart-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 #shopping-cart ion-item {

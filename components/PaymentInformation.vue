@@ -3,6 +3,7 @@
     <ion-item>
       <ion-grid>
         <ion-row>
+          <ion-col>
           <ion-input
             fill="outline"
             label="Adresse"
@@ -10,6 +11,7 @@
             v-model="inputFields.Adresse"
           >
           </ion-input>
+        </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
