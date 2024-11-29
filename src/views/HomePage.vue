@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <div id="main-layout">
-        <div class="pizza-list">
+        <div id="pizza-list">
           <div
             v-for="product in products"
             :key="product.id"
@@ -15,8 +15,8 @@
           </div>
         </div>
 
-        <div id="shopping-cart" class="shopping-cart">
-          <ion-title>Deine Bestellung</ion-title>
+        <div id="shopping-cart">
+          <ion-title id="cart-title">Deine Bestellung</ion-title>
           <div v-if="itemsInCart">
             <ion-list lines="none">
               <ion-item
@@ -25,21 +25,21 @@
               >
                 <ion-grid>
                   <ion-row>
-                    <ion-col size="1">
+                    <ion-col>
                       <ion-label>{{ productData.amount }}x</ion-label>
                     </ion-col>
-                    <ion-col size="4">
+                    <ion-col>
                       <ion-label>{{ productName }}</ion-label>
                     </ion-col>
-                    <ion-col size="2">
-                      <ion-button @click="increaseAmount(productName)">
-                        <ion-icon :icon="add"></ion-icon>
+                    <ion-col size="auto">
+                      <ion-button shape="round" @click="increaseAmount(productName)">
+                        <ion-icon slot="icon-only" :icon="add"></ion-icon>
                       </ion-button>
-                      <ion-button @click="removeFromCart(1, productName)">
-                        <ion-icon :icon="remove"></ion-icon>
+                      <ion-button shape="round" @click="removeFromCart(1, productName)">
+                        <ion-icon slot="icon-only" :icon="remove"></ion-icon>
                       </ion-button>
                     </ion-col>
-                    <ion-col size="2">
+                    <ion-col size="auto">
                       <ion-label
                         >{{
                           getProductPrice(productName).toFixed(2)
@@ -47,9 +47,11 @@
                         €</ion-label
                       >
                     </ion-col>
-                    <ion-col size="1">
+                    <ion-col size="auto">
                       <ion-button
                         @click="removeFromCart(productData.amount, productName)"
+                        shape="round"
+                        fill="clear"
                       >
                         <ion-icon :icon="trashOutline"></ion-icon>
                       </ion-button>
@@ -58,16 +60,23 @@
                 </ion-grid>
               </ion-item>
             </ion-list>
-            <ion-label>Gesamt: {{ totalPrice.toFixed(2) }} €</ion-label>
+              <ion-row>
+                <ion-col size="7">
+                  <ion-label>Gesamt: </ion-label>
+                </ion-col>
+                <ion-col size="4">
+                  <ion-label>{{ totalPrice.toFixed(2) }} €</ion-label>
+                </ion-col>
+              </ion-row>
           </div>
 
-          <div v-else>
+          <div v-else id="empty-cart">
             <ion-icon :icon="cartOutline" style="font-size: 100px"></ion-icon>
             <ion-label
               >Wähle eine Pizza aus der Karte und bestell sie!</ion-label
             >
           </div>
-          <ion-button :disabled="!itemsInCart" @click="goto('/payment')"
+          <ion-button expand="block" :disabled="!itemsInCart" @click="goto('/payment')"
             >Bestellen</ion-button
           >
         </div>
@@ -100,8 +109,6 @@ const router = useRouter();
 const goto = (path) => {
   localStorage.setItem("cart", JSON.stringify(cart.value));
   localStorage.setItem("prices", JSON.stringify(priceJSON.value));
-  console.log(cart.value);
-  console.log(priceJSON.value);
   router.push(path);
 };
 
@@ -117,7 +124,6 @@ const fetchProducts = async () => {
       "http://localhost/ionic-pizzawebsite/api.php"
     );
     products.value = response.data;
-    console.log(products.value);
   } catch (error) {
     console.error("Fehler beim Abrufen der Produkte:", error);
   }
@@ -190,7 +196,7 @@ const removeFromCart = (amount, productName) => {
  * @param productName Name of the product which will be increased
  */
 const increaseAmount = (productName) => {
-  cart.value[productName] += 1;
+  cart.value[productName].amount += 1;
   calculateTotalPrice();
 };
 
@@ -215,16 +221,34 @@ onMounted(fetchProducts);
   justify-content: space-between;
 }
 
-.pizza-list {
-  flex: 2;
+#pizza-list {
+  flex: 3;
 }
 
-.shopping-cart {
+#shopping-cart {
   flex: 1;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
   background: #f8f8f8;
-  padding: 16px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#cart-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
 }
 
 #shopping-cart ion-item {
@@ -258,6 +282,11 @@ ion-col {
 
   ion-label {
     color: white;
+  }
+
+  ion-button {
+    --background: #1e1e23;
+    --color: white;
   }
 
   .pizza-list {
