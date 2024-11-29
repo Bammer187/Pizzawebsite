@@ -8,26 +8,27 @@
             :key="product.id"
             class="product-item"
           >
-              <ion-card style="flex: 3">
-                <ion-card-header>
-                  <ion-card-title>{{ product.name }}</ion-card-title>
-                  <ion-card-subtitle>{{
-                    product.description
-                  }}</ion-card-subtitle>
-                </ion-card-header>
-                <ion-card-content>
-                  {{ Number(product.price).toFixed(2) }} €
-                </ion-card-content>
-                <ion-button style="margin-left: 10px; margin-bottom: 10px" @click="addToCart(product)"
-                  >Hinzufügen</ion-button
-                >
-              </ion-card>
-              <img
-                :alt="product.name"
-                :src="`/img/${product.name}.png`"
-                style="flex: 1"
-                width="150px"
-              />
+            <ion-card style="flex: 3">
+              <ion-card-header>
+                <ion-card-title>{{ product.name }}</ion-card-title>
+                <ion-card-subtitle>{{ product.description }}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                {{ Number(product.price).toFixed(2) }} €
+              </ion-card-content>
+              <ion-button
+                style="margin-left: 10px; margin-bottom: 10px"
+                @click="addToCart(product)"
+                >Hinzufügen</ion-button
+              >
+            </ion-card>
+            <img
+              :alt="product.name"
+              :src="`/img/${product.name}.png`"
+              style="flex: 1"
+              width="150px"
+              @error="setDefaultImage"
+            />
           </div>
         </div>
 
@@ -128,7 +129,6 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardSubtitle,
-  IonThumbnail,
 } from "@ionic/vue";
 import axios from "axios";
 import { ref, onMounted } from "vue";
@@ -149,6 +149,9 @@ const totalPrice = ref(0);
 const itemsInCart = ref(false);
 const priceJSON = ref({ total: 0 });
 
+/**
+ * Calls the 'api.php' script to get all products stored in the db.
+ */
 const fetchProducts = async () => {
   try {
     const response = await axios.get(
@@ -158,6 +161,14 @@ const fetchProducts = async () => {
   } catch (error) {
     console.error("Fehler beim Abrufen der Produkte:", error);
   }
+};
+
+/**
+ * Gets called if an image that should be loaded doesn't exist.
+ * @param event comes from '@error' event
+ */
+const setDefaultImage = (event) => {
+  event.target.src = "https://ionicframework.com/docs/img/demos/card-media.png";
 };
 
 /**
@@ -345,5 +356,4 @@ ion-col {
     border-bottom: 1px solid #444;
   }
 }
-
 </style>
