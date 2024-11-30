@@ -1,35 +1,184 @@
 <template>
-  <div id="main-layout">
-    <div id="payment-information">
-      <PaymentInformation v-model:inputFields="inputFields" />
-      <ion-button @click="confirmOrder"></ion-button>
-    </div>
-    <div id="shopping-cart" class="shopping-cart">
-      <ion-title>Deine Bestellung</ion-title>
-      <ion-list lines="none">
-        <ion-item v-for="(productData, productName) in cart" :key="productName">
+  <ion-page>
+    <ion-content :fullscreen="true">
+      <div id="main-layout">
+        <div id="payment-information">
+          <ion-list lines="none" id="payment-list">
+            <ion-item>
+              <ion-list lines="none" id="payment-item">
+                <ion-item>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Adresse"
+                          :value="inputFields.Adresse"
+                          label-placement="floating"
+                          @ionInput="onAddressInput($event)"
+                          ref="ionAddressInputEl"
+                        ></ion-input>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Postleitzahl"
+                          label-placement="floating"
+                          :value="inputFields.Postleitzahl"
+                          @ionInput="validatePostal($event)"
+                          ref="ionPostalInputEl"
+                        >
+                        </ion-input>
+                      </ion-col>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Stadt"
+                          label-placement="floating"
+                          :value="inputFields.Stadt"
+                          @ionInput="
+                            filterNonAlphaChar($event, 'Stadt', ionCityInputEl)
+                          "
+                          ref="ionCityInputEl"
+                        >
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Vorname"
+                          label-placement="floating"
+                          :value="inputFields.Vorname"
+                          @ionInput="
+                            filterNonAlphaChar(
+                              $event,
+                              'Vorname',
+                              ionFirstnameInputEl
+                            )
+                          "
+                          ref="ionFirstnameInputEl"
+                        >
+                        </ion-input>
+                      </ion-col>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Nachname"
+                          label-placement="floating"
+                          :value="inputFields.Nachname"
+                          @ionInput="
+                            filterNonAlphaChar(
+                              $event,
+                              'Nachname',
+                              ionLastnameInputEl
+                            )
+                          "
+                          ref="ionLastnameInputEl"
+                        >
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Telefon"
+                          label-placement="floating"
+                          type="tel"
+                          v-model="inputFields.Telefon"
+                          placeholder="0000 0000 0000"
+                          v-maskito="phoneOptions"
+                          maxlength="14"
+                        >
+                        </ion-input>
+                      </ion-col>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="E-Mail"
+                          label-placement="floating"
+                          type="email"
+                          v-model="inputFields.Email"
+                          error-text="Ungültige E-Mail"
+                          @ionInput="validate"
+                          @ionBlur="markTouched"
+                          ref="emailInputRef"
+                        >
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+              </ion-list>
+            </ion-item>
+            <ion-checkbox v-model="acceptTOC"
+              >Ich akzeptiere die <a @click.prevent="openModal">AGBs</a></ion-checkbox
+            >
+            <ion-modal :is-open="isModalOpen" @didDismiss="closeModal">
+                <img src="../../public/img/Edler.png" alt="Luka Karl Elder" />
+            </ion-modal>
+            <ion-item>
+              <ion-button
+                @click="confirmOrder"
+                id="order-button"
+                :disabled="!canOrder()"
+                >Bestellen</ion-button
+              >
+            </ion-item>
+          </ion-list>
+        </div>
+        <div id="shopping-cart">
+          <ion-title id="cart-title">Deine Bestellung</ion-title>
+          <ion-list lines="none">
+            <ion-item
+              v-for="(productData, productName) in cart"
+              :key="productName"
+            >
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="3">
+                    <ion-label>{{ productData.amount }}x</ion-label>
+                  </ion-col>
+                  <ion-col size="3">
+                    <ion-label>{{ productName }}</ion-label>
+                  </ion-col>
+                  <ion-col size="3">
+                    <ion-label
+                      >{{ prices[productName].toFixed(2) }} €</ion-label
+                    >
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+          </ion-list>
+
           <ion-grid>
             <ion-row>
               <ion-col size="3">
-                <ion-label>{{ productData.amount }}x</ion-label>
+                <ion-label>Gesamt:</ion-label>
               </ion-col>
-              <ion-col size="3">
-                <ion-label>{{ productName }}</ion-label>
-              </ion-col>
-              <ion-col size="3">
-                <ion-label>{{ prices[productName].toFixed(2) }} €</ion-label>
+              <ion-col
+                size="3"
+                style="padding-left: 135px; white-space: nowrap"
+              >
+                <ion-label>{{ prices["total"].toFixed(2) }} €</ion-label>
               </ion-col>
             </ion-row>
           </ion-grid>
-        </ion-item>
-      </ion-list>
-      <ion-label>Gesamt: {{ prices["total"].toFixed(2) }} €</ion-label>
-    </div>
-  </div>
+        </div>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup>
 import {
+  IonPage,
+  IonContent,
   IonList,
   IonItem,
   IonGrid,
@@ -38,13 +187,29 @@ import {
   IonLabel,
   IonButton,
   IonTitle,
+  IonCheckbox,
+  IonInput,
+  IonModal,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import PaymentInformation from "../../components/PaymentInformation.vue";
+import { maskito as vMaskito } from "@maskito/vue";
 import axios from "axios";
 
 const cart = ref({});
 const prices = ref({ total: 0 });
+const acceptTOC = ref(false);
+const emailIsValid = ref(false);
+
+const isModalOpen = ref(false);
+
+    const openModal = () => {
+      isModalOpen.value = true;
+    };
+
+    const closeModal = () => {
+      isModalOpen.value = false;
+    };
+
 const order = ref({
   total: 0,
   date: "",
@@ -78,6 +243,21 @@ const sendDataToDatabase = async (data) => {
   }
 };
 
+const canOrder = () => {
+  if (
+    inputFields.value.Adresse != "" &&
+    inputFields.value.Postleitzahl != "" &&
+    inputFields.value.Stadt != "" &&
+    inputFields.value.Vorname != "" &&
+    inputFields.value.Nachname != "" &&
+    emailIsValid.value &&
+    acceptTOC.value
+  ) {
+    return true;
+  }
+  return false;
+};
+
 const confirmOrder = () => {
   order.value["pizzas"] = JSON.parse(JSON.stringify(cart.value));
   order.value["total"] = prices.value["total"];
@@ -97,8 +277,128 @@ const confirmOrder = () => {
     ":" +
     date.getSeconds();
   order.value["date"] = currentDate;
-  console.log(order.value);
   sendDataToDatabase(order.value);
+};
+
+// Validation section
+// Address
+const ionAddressInputEl = ref();
+const onAddressInput = (ev) => {
+  const value = ev.target.value;
+
+  // Removes non alphanumeric characters
+  const filteredValue = value.replace(/[^a-zA-Z0-9]+/g, "");
+
+  /**
+   * Update both the state variable and
+   * the component to keep them in sync.
+   */
+  inputFields.value.Adresse = filteredValue;
+
+  const inputCmp = ionAddressInputEl.value;
+  if (inputCmp !== undefined) {
+    inputCmp.$el.value = filteredValue;
+  }
+};
+
+// Postal Code
+const ionPostalInputEl = ref();
+const validatePostal = (ev) => {
+  const value = ev.target.value;
+
+  // Removes non alphabetic characters
+  const filteredValue = value.replace(/[^0-9]+/g, "");
+
+  /**
+   * Update both the state variable and
+   * the component to keep them in sync.
+   */
+  inputFields.value.Postleitzahl = filteredValue;
+
+  const inputCmp = ionPostalInputEl.value;
+  if (inputCmp !== undefined) {
+    inputCmp.$el.value = filteredValue;
+  }
+};
+
+// Firsname, Lastname, City
+const ionFirstnameInputEl = ref();
+const ionLastnameInputEl = ref();
+const ionCityInputEl = ref();
+const filterNonAlphaChar = (ev, field, inputEl) => {
+  const value = ev.target.value;
+
+  // Removes non alphabetic characters
+  const filteredValue = value.replace(/[^a-zA-Z]+/g, "");
+
+  /**
+   * Update both the state variable and
+   * the component to keep them in sync.
+   */
+  inputFields.value[field] = filteredValue;
+
+  const inputCmp = inputEl;
+  if (inputCmp !== undefined) {
+    inputCmp.$el.value = filteredValue;
+  }
+};
+
+//E-Mail
+const emailInputRef = ref(null);
+
+const validateEmail = (email) => {
+  return (
+    email.match(
+      /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,63})$/
+    ) !== null
+  );
+};
+
+const validate = (ev) => {
+  const target = ev.target;
+  const value = target.value;
+
+  const inputEl = emailInputRef.value?.$el;
+  if (!inputEl) return;
+
+  inputEl.classList.remove("ion-valid", "ion-invalid");
+
+  if (value === "") return;
+
+  if (validateEmail(value)) {
+    inputEl.classList.add("ion-valid");
+    emailIsValid.value = true;
+  } else {
+    inputEl.classList.add("ion-invalid");
+    emailIsValid.value = false;
+  }
+};
+
+const markTouched = () => {
+  const inputEl = emailInputRef.value?.$el;
+  if (inputEl) {
+    inputEl.classList.add("ion-touched");
+  }
+};
+
+// Phonenumber
+const phoneOptions = {
+  mask: [
+    ...Array(4).fill(/\d/),
+    " ",
+    ...Array(4).fill(/\d/),
+    " ",
+    ...Array(5).fill(/\d/),
+    " ",
+  ],
+  elementPredicate: (el) => {
+    return new Promise((resolve) => {
+      requestAnimationFrame(async () => {
+        const input = await el.getInputElement();
+        resolve(input);
+      });
+    });
+  },
 };
 
 onMounted(() => {
@@ -115,19 +415,55 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-top: 20px;
+  height: 100%;
 }
 
-.payment-information {
-  flex: 2;
+#payment-information {
+  height: 100%;
+  flex: 9;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: auto;
 }
 
-.shopping-cart {
-  flex: 1;
+#payment-list {
+  height: 100%;
+  padding-left: 16px;
+}
+
+#payment-item {
+  width: 1400px;
+  margin-right: 16px;
+}
+
+ion-checkbox {
+  margin-left: 42px;
+  margin-bottom: 20px;
+}
+
+#order-button {
+  width: 400px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 25px;
+}
+
+#shopping-cart {
+  flex: 3;
+  height: 100%;
   background: #f8f8f8;
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#cart-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 #shopping-cart ion-item {

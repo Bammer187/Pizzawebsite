@@ -2,21 +2,38 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <div id="main-layout">
-        <div class="pizza-list">
+        <div id="pizza-list">
           <div
             v-for="product in products"
             :key="product.id"
             class="product-item"
           >
-            <h2>{{ product.name }}</h2>
-            <p>{{ product.description }}</p>
-            <p>{{ Number(product.price).toFixed(2) }} €</p>
-            <ion-button @click="addToCart(product)">Hinzufügen</ion-button>
+            <ion-card style="flex: 3">
+              <ion-card-header>
+                <ion-card-title>{{ product.name }}</ion-card-title>
+                <ion-card-subtitle>{{ product.description }}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content class="card-price">
+                {{ Number(product.price).toFixed(2) }} €
+              </ion-card-content>
+              <ion-button
+                style="margin-left: 10px; margin-bottom: 10px"
+                @click="addToCart(product)"
+                >Hinzufügen</ion-button
+              >
+            </ion-card>
+            <img
+              :alt="product.name"
+              :src="`/img/${product.name}.png`"
+              style="flex: 1"
+              width="150px"
+              @error="setDefaultImage"
+            />
           </div>
         </div>
 
-        <div id="shopping-cart" class="shopping-cart">
-          <ion-title>Deine Bestellung</ion-title>
+        <div id="shopping-cart">
+          <ion-title id="cart-title">Deine Bestellung</ion-title>
           <div v-if="itemsInCart">
             <ion-list lines="none">
               <ion-item
@@ -25,21 +42,27 @@
               >
                 <ion-grid>
                   <ion-row>
-                    <ion-col size="1">
+                    <ion-col>
                       <ion-label>{{ productData.amount }}x</ion-label>
                     </ion-col>
-                    <ion-col size="4">
+                    <ion-col>
                       <ion-label>{{ productName }}</ion-label>
                     </ion-col>
-                    <ion-col size="2">
-                      <ion-button @click="increaseAmount(productName)">
-                        <ion-icon :icon="add"></ion-icon>
+                    <ion-col size="auto">
+                      <ion-button
+                        shape="round"
+                        @click="increaseAmount(productName)"
+                      >
+                        <ion-icon slot="icon-only" :icon="add"></ion-icon>
                       </ion-button>
-                      <ion-button @click="removeFromCart(1, productName)">
-                        <ion-icon :icon="remove"></ion-icon>
+                      <ion-button
+                        shape="round"
+                        @click="removeFromCart(1, productName)"
+                      >
+                        <ion-icon slot="icon-only" :icon="remove"></ion-icon>
                       </ion-button>
                     </ion-col>
-                    <ion-col size="2">
+                    <ion-col size="auto">
                       <ion-label
                         >{{
                           getProductPrice(productName).toFixed(2)
@@ -47,9 +70,11 @@
                         €</ion-label
                       >
                     </ion-col>
-                    <ion-col size="1">
+                    <ion-col size="auto">
                       <ion-button
                         @click="removeFromCart(productData.amount, productName)"
+                        shape="round"
+                        fill="clear"
                       >
                         <ion-icon :icon="trashOutline"></ion-icon>
                       </ion-button>
@@ -58,16 +83,26 @@
                 </ion-grid>
               </ion-item>
             </ion-list>
-            <ion-label>Gesamt: {{ totalPrice.toFixed(2) }} €</ion-label>
+            <ion-row>
+              <ion-col size="7">
+                <ion-label>Gesamt: </ion-label>
+              </ion-col>
+              <ion-col size="4">
+                <ion-label>{{ totalPrice.toFixed(2) }} €</ion-label>
+              </ion-col>
+            </ion-row>
           </div>
 
-          <div v-else>
+          <div v-else id="empty-cart">
             <ion-icon :icon="cartOutline" style="font-size: 100px"></ion-icon>
             <ion-label
               >Wähle eine Pizza aus der Karte und bestell sie!</ion-label
             >
           </div>
-          <ion-button :disabled="!itemsInCart" @click="goto('/payment')"
+          <ion-button
+            expand="block"
+            :disabled="!itemsInCart"
+            @click="goto('/payment')"
             >Bestellen</ion-button
           >
         </div>
@@ -89,6 +124,11 @@ import {
   IonCol,
   IonIcon,
   IonTitle,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
 } from "@ionic/vue";
 import axios from "axios";
 import { ref, onMounted } from "vue";
@@ -100,8 +140,6 @@ const router = useRouter();
 const goto = (path) => {
   localStorage.setItem("cart", JSON.stringify(cart.value));
   localStorage.setItem("prices", JSON.stringify(priceJSON.value));
-  console.log(cart.value);
-  console.log(priceJSON.value);
   router.push(path);
 };
 
@@ -111,16 +149,26 @@ const totalPrice = ref(0);
 const itemsInCart = ref(false);
 const priceJSON = ref({ total: 0 });
 
+/**
+ * Calls the 'api.php' script to get all products stored in the db.
+ */
 const fetchProducts = async () => {
   try {
     const response = await axios.get(
       "http://localhost/ionic-pizzawebsite/api.php"
     );
     products.value = response.data;
-    console.log(products.value);
   } catch (error) {
     console.error("Fehler beim Abrufen der Produkte:", error);
   }
+};
+
+/**
+ * Gets called if an image that should be loaded doesn't exist.
+ * @param event comes from '@error' event
+ */
+const setDefaultImage = (event) => {
+  event.target.src = "https://ionicframework.com/docs/img/demos/card-media.png";
 };
 
 /**
@@ -134,10 +182,9 @@ const addToCart = (product) => {
   if (cart.value[product.name]) {
     cart.value[product.name].amount += 1;
   } else {
-    
     cart.value[product.name] = {
-      "id": products.value.find(p => p.name === product.name).id,
-      "amount": 1,
+      id: products.value.find((p) => p.name === product.name).id,
+      amount: 1,
     };
   }
   calculateTotalPrice();
@@ -190,7 +237,7 @@ const removeFromCart = (amount, productName) => {
  * @param productName Name of the product which will be increased
  */
 const increaseAmount = (productName) => {
-  cart.value[productName] += 1;
+  cart.value[productName].amount += 1;
   calculateTotalPrice();
 };
 
@@ -215,23 +262,66 @@ onMounted(fetchProducts);
   justify-content: space-between;
 }
 
-.pizza-list {
-  flex: 2;
+#pizza-list {
+  flex: 3;
 }
 
-.shopping-cart {
-  flex: 1;
-  background: #f8f8f8;
+.product-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
   padding: 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.product-card {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-image {
+  flex: 1;
+  max-width: 150px;
+  height: auto;
+  object-fit: contain;
+  margin-left: 16px;
+}
+
+.card-price {
+  font-size: 20px;
+  color: black;
+}
+
+#shopping-cart {
+  flex: 1;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #f8f8f8;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#shopping-cart ion-item {
-  margin-bottom: 16px;
+#cart-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
-/* Standard Styles */
+#empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+}
+
 ion-label {
   font-size: 16px;
 }
@@ -249,7 +339,6 @@ ion-col {
   margin-right: 16px;
 }
 
-/* Dark Mode Styles */
 @media (prefers-color-scheme: dark) {
   #shopping-cart {
     background-color: #333;
@@ -260,8 +349,21 @@ ion-col {
     color: white;
   }
 
-  .pizza-list {
+  ion-button {
+    --background: #1e1e23;
+    --color: white;
+  }
+
+  #pizza-list {
     background-color: #1e1e1e;
+  }
+
+  .product-item {
+    border-bottom: 1px solid #444;
+  }
+  
+  .card-price {
+    color: #EEEEEE;
   }
 }
 </style>
