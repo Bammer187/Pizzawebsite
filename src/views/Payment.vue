@@ -26,7 +26,9 @@
                           fill="outline"
                           label="Postleitzahl"
                           label-placement="floating"
-                          v-model="inputFields.Postleitzahl"
+                          :value="inputFields.Postleitzahl"
+                          @ionInput="validatePostal($event)"
+                          ref="ionPostalInputEl"
                         >
                         </ion-input>
                       </ion-col>
@@ -35,7 +37,9 @@
                           fill="outline"
                           label="Stadt"
                           label-placement="floating"
-                          v-model="inputFields.Stadt"
+                          :value="inputFields.Stadt"
+                          @ionInput="filterNonAlphaChar($event, 'Stadt', ionCityInputEl)"
+                          ref="ionCityInputEl"
                         >
                         </ion-input>
                       </ion-col>
@@ -46,7 +50,9 @@
                           fill="outline"
                           label="Vorname"
                           label-placement="floating"
-                          v-model="inputFields.Vorname"
+                          :value="inputFields.Vorname"
+                          @ionInput="filterNonAlphaChar($event, 'Vorname', ionFirstnameInputEl)"
+                          ref="ionFirstnameInputEl"
                         >
                         </ion-input>
                       </ion-col>
@@ -55,7 +61,9 @@
                           fill="outline"
                           label="Nachname"
                           label-placement="floating"
-                          v-model="inputFields.Nachname"
+                          :value="inputFields.Nachname"
+                          @ionInput="filterNonAlphaChar($event, 'Nachname', ionLastnameInputEl)"
+                          ref="ionLastnameInputEl"
                         >
                         </ion-input>
                       </ion-col>
@@ -243,6 +251,48 @@ const onAddressInput = (ev) => {
   inputFields.value.Adresse = filteredValue;
 
   const inputCmp = ionAddressInputEl.value;
+  if (inputCmp !== undefined) {
+    inputCmp.$el.value = filteredValue;
+  }
+};
+
+// Postal Code
+const ionPostalInputEl = ref();
+const validatePostal = (ev) => {
+  const value = ev.target.value;
+
+  // Removes non alphabetic characters
+  const filteredValue = value.replace(/[^0-9]+/g, "");
+
+  /**
+   * Update both the state variable and
+   * the component to keep them in sync.
+   */
+  inputFields.value.Postleitzahl = filteredValue;
+
+  const inputCmp = ionPostalInputEl.value;
+  if (inputCmp !== undefined) {
+    inputCmp.$el.value = filteredValue;
+  }
+};
+
+// Firsname, Lastname, City
+const ionFirstnameInputEl = ref();
+const ionLastnameInputEl = ref();
+const ionCityInputEl = ref();
+const filterNonAlphaChar = (ev, field, inputEl) => {
+  const value = ev.target.value;
+
+  // Removes non alphabetic characters
+  const filteredValue = value.replace(/[^a-zA-Z]+/g, "");
+
+  /**
+   * Update both the state variable and
+   * the component to keep them in sync.
+   */
+   inputFields.value[field] = filteredValue;
+
+  const inputCmp = inputEl;
   if (inputCmp !== undefined) {
     inputCmp.$el.value = filteredValue;
   }
