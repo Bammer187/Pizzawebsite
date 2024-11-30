@@ -38,7 +38,9 @@
                           label="Stadt"
                           label-placement="floating"
                           :value="inputFields.Stadt"
-                          @ionInput="filterNonAlphaChar($event, 'Stadt', ionCityInputEl)"
+                          @ionInput="
+                            filterNonAlphaChar($event, 'Stadt', ionCityInputEl)
+                          "
                           ref="ionCityInputEl"
                         >
                         </ion-input>
@@ -51,7 +53,13 @@
                           label="Vorname"
                           label-placement="floating"
                           :value="inputFields.Vorname"
-                          @ionInput="filterNonAlphaChar($event, 'Vorname', ionFirstnameInputEl)"
+                          @ionInput="
+                            filterNonAlphaChar(
+                              $event,
+                              'Vorname',
+                              ionFirstnameInputEl
+                            )
+                          "
                           ref="ionFirstnameInputEl"
                         >
                         </ion-input>
@@ -62,7 +70,13 @@
                           label="Nachname"
                           label-placement="floating"
                           :value="inputFields.Nachname"
-                          @ionInput="filterNonAlphaChar($event, 'Nachname', ionLastnameInputEl)"
+                          @ionInput="
+                            filterNonAlphaChar(
+                              $event,
+                              'Nachname',
+                              ionLastnameInputEl
+                            )
+                          "
                           ref="ionLastnameInputEl"
                         >
                         </ion-input>
@@ -106,7 +120,10 @@
               <a href="#" @click="acceptTOC = !acceptTOC">AGBs</a></ion-checkbox
             >
             <ion-item>
-              <ion-button @click="confirmOrder" id="order-button"
+              <ion-button
+                @click="confirmOrder"
+                id="order-button"
+                :disabled="!canOrder()"
                 >Bestellen</ion-button
               >
             </ion-item>
@@ -178,6 +195,7 @@ import axios from "axios";
 const cart = ref({});
 const prices = ref({ total: 0 });
 const acceptTOC = ref(false);
+const emailIsValid = ref(false);
 
 const order = ref({
   total: 0,
@@ -212,6 +230,18 @@ const sendDataToDatabase = async (data) => {
   }
 };
 
+const canOrder = () => {
+  if(inputFields.value.Adresse != ''
+  && inputFields.value.Postleitzahl != ''
+  && inputFields.value.Stadt != ''
+  && inputFields.value.Vorname != ''
+  && inputFields.value.Nachname != ''
+  && emailIsValid.value) {
+    return true;
+  }
+  return false;
+};
+
 const confirmOrder = () => {
   order.value["pizzas"] = JSON.parse(JSON.stringify(cart.value));
   order.value["total"] = prices.value["total"];
@@ -232,6 +262,7 @@ const confirmOrder = () => {
     date.getSeconds();
   order.value["date"] = currentDate;
   console.log(order.value);
+  console.log(emailIsValid.value);
   //sendDataToDatabase(order.value);
 };
 
@@ -290,7 +321,7 @@ const filterNonAlphaChar = (ev, field, inputEl) => {
    * Update both the state variable and
    * the component to keep them in sync.
    */
-   inputFields.value[field] = filteredValue;
+  inputFields.value[field] = filteredValue;
 
   const inputCmp = inputEl;
   if (inputCmp !== undefined) {
@@ -320,9 +351,13 @@ const validate = (ev) => {
 
   if (value === "") return;
 
-  validateEmail(value)
-    ? inputEl.classList.add("ion-valid")
-    : inputEl.classList.add("ion-invalid");
+  if(validateEmail(value)){
+    inputEl.classList.add("ion-valid");
+    emailIsValid.value = true;
+  } else {
+    inputEl.classList.add("ion-invalid");
+    emailIsValid.value = false;
+  }
 };
 
 const markTouched = () => {
