@@ -115,9 +115,8 @@
                 </ion-item>
               </ion-list>
             </ion-item>
-            <ion-checkbox
-              >Ich akzeptiere die
-              <a href="#" @click="acceptTOC = !acceptTOC">AGBs</a></ion-checkbox
+            <ion-checkbox v-model="acceptTOC"
+              >Ich akzeptiere die <a href="#">AGBs</a></ion-checkbox
             >
             <ion-item>
               <ion-button
@@ -231,12 +230,15 @@ const sendDataToDatabase = async (data) => {
 };
 
 const canOrder = () => {
-  if(inputFields.value.Adresse != ''
-  && inputFields.value.Postleitzahl != ''
-  && inputFields.value.Stadt != ''
-  && inputFields.value.Vorname != ''
-  && inputFields.value.Nachname != ''
-  && emailIsValid.value) {
+  if (
+    inputFields.value.Adresse != "" &&
+    inputFields.value.Postleitzahl != "" &&
+    inputFields.value.Stadt != "" &&
+    inputFields.value.Vorname != "" &&
+    inputFields.value.Nachname != "" &&
+    emailIsValid.value &&
+    acceptTOC.value
+  ) {
     return true;
   }
   return false;
@@ -263,7 +265,7 @@ const confirmOrder = () => {
   order.value["date"] = currentDate;
   console.log(order.value);
   console.log(emailIsValid.value);
-  //sendDataToDatabase(order.value);
+  sendDataToDatabase(order.value);
 };
 
 // Validation section
@@ -351,7 +353,7 @@ const validate = (ev) => {
 
   if (value === "") return;
 
-  if(validateEmail(value)){
+  if (validateEmail(value)) {
     inputEl.classList.add("ion-valid");
     emailIsValid.value = true;
   } else {
