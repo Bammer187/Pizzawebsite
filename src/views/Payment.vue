@@ -287,7 +287,7 @@ const onAddressInput = (ev) => {
   const value = ev.target.value;
 
   // Removes non alphanumeric characters
-  const filteredValue = value.replace(/[^a-zA-Z0-9]+/g, "");
+  const filteredValue = value.replace(/[^a-zA-Z0-9\s]+/g, "");
 
   /**
    * Update both the state variable and
