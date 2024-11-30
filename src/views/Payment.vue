@@ -5,12 +5,98 @@
         <div id="payment-information">
           <ion-list lines="none" id="payment-list">
             <ion-item>
-              <PaymentInformation
-                v-model:inputFields="inputFields"
-                id="payment-item"
-              />
+              <ion-list lines="none" id="payment-item">
+                <ion-item>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Adresse"
+                          :value="inputFields.Adresse"
+                          label-placement="floating"
+                          @ionInput="onInput($event)"
+                          ref="ionInputEl"
+                        ></ion-input>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Postleitzahl"
+                          label-placement="floating"
+                          v-model="inputFields.Postleitzahl"
+                        >
+                        </ion-input>
+                      </ion-col>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Stadt"
+                          label-placement="floating"
+                          v-model="inputFields.Stadt"
+                        >
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Vorname"
+                          label-placement="floating"
+                          v-model="inputFields.Vorname"
+                        >
+                        </ion-input>
+                      </ion-col>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Nachname"
+                          label-placement="floating"
+                          v-model="inputFields.Nachname"
+                        >
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="Telefon"
+                          label-placement="floating"
+                          type="tel"
+                          v-model="inputFields.Telefon"
+                          placeholder="0000 0000 0000"
+                          v-maskito="phoneOptions"
+                          maxlength="14"
+                        >
+                        </ion-input>
+                      </ion-col>
+                      <ion-col>
+                        <ion-input
+                          fill="outline"
+                          label="E-Mail"
+                          label-placement="floating"
+                          type="email"
+                          v-model="inputFields.Email"
+                          error-text="Ungültige E-Mail"
+                          @ionInput="validate"
+                          @ionBlur="markTouched"
+                          ref="emailInputRef"
+                        >
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+              </ion-list>
             </ion-item>
-            <ion-checkbox>Ich akzeptiere die <a href="#" @click="acceptTOC = !acceptTOC">AGBs</a></ion-checkbox>
+            <ion-checkbox
+              >Ich akzeptiere die
+              <a href="#" @click="acceptTOC = !acceptTOC">AGBs</a></ion-checkbox
+            >
             <ion-item>
               <ion-button @click="confirmOrder" id="order-button"
                 >Bestellen</ion-button
@@ -48,7 +134,10 @@
               <ion-col size="3">
                 <ion-label>Gesamt:</ion-label>
               </ion-col>
-              <ion-col size="3" style="padding-left: 135px; white-space: nowrap;">
+              <ion-col
+                size="3"
+                style="padding-left: 135px; white-space: nowrap"
+              >
                 <ion-label>{{ prices["total"].toFixed(2) }} €</ion-label>
               </ion-col>
             </ion-row>
@@ -72,14 +161,16 @@ import {
   IonButton,
   IonTitle,
   IonCheckbox,
+  IonInput,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import PaymentInformation from "../../components/PaymentInformation.vue";
+import { maskito as vMaskito } from "@maskito/vue";
 import axios from "axios";
 
 const cart = ref({});
 const prices = ref({ total: 0 });
 const acceptTOC = ref(false);
+
 const order = ref({
   total: 0,
   date: "",
@@ -136,6 +227,81 @@ const confirmOrder = () => {
   //sendDataToDatabase(order.value);
 };
 
+// Validation section
+// Address
+const ionInputEl = ref();
+const onInput = (ev) => {
+  const value = ev.target.value;
+
+  // Removes non alphanumeric characters
+  const filteredValue = value.replace(/[^a-zA-Z0-9]+/g, "");
+
+  /**
+   * Update both the state variable and
+   * the component to keep them in sync.
+   */
+  inputFields.value.Adresse = filteredValue;
+
+  const inputCmp = ionInputEl.value;
+  if (inputCmp !== undefined) {
+    inputCmp.$el.value = filteredValue;
+  }
+};
+
+//E-Mail
+const emailInputRef = ref(null);
+
+const validateEmail = (email) => {
+  return (
+    email.match(
+      /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,63})$/
+    ) !== null
+  );
+};
+
+const validate = (ev) => {
+  const target = ev.target;
+  const value = target.value;
+
+  const inputEl = emailInputRef.value?.$el;
+  if (!inputEl) return;
+
+  inputEl.classList.remove("ion-valid", "ion-invalid");
+
+  if (value === "") return;
+
+  validateEmail(value)
+    ? inputEl.classList.add("ion-valid")
+    : inputEl.classList.add("ion-invalid");
+};
+
+const markTouched = () => {
+  const inputEl = emailInputRef.value?.$el;
+  if (inputEl) {
+    inputEl.classList.add("ion-touched");
+  }
+};
+
+// Phonenumber
+const phoneOptions = {
+  mask: [
+    ...Array(4).fill(/\d/),
+    " ",
+    ...Array(4).fill(/\d/),
+    " ",
+    ...Array(5).fill(/\d/),
+    " ",
+  ],
+  elementPredicate: (el) => {
+    return new Promise((resolve) => {
+      requestAnimationFrame(async () => {
+        const input = await el.getInputElement();
+        resolve(input);
+      });
+    });
+  },
+};
+
 onMounted(() => {
   const cartData = localStorage.getItem("cart");
   const pricesData = localStorage.getItem("prices");
@@ -174,7 +340,7 @@ onMounted(() => {
 
 ion-checkbox {
   margin-left: 42px;
-  margin-bottom: 20px
+  margin-bottom: 20px;
 }
 
 #order-button {
