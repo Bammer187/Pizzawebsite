@@ -116,8 +116,11 @@
               </ion-list>
             </ion-item>
             <ion-checkbox v-model="acceptTOC"
-              >Ich akzeptiere die <a href="#">AGBs</a></ion-checkbox
+              >Ich akzeptiere die <a @click.prevent="openModal">AGBs</a></ion-checkbox
             >
+            <ion-modal :is-open="isModalOpen" @didDismiss="closeModal">
+                <img src="../../public/img/Edler.png" alt="Luka Karl Elder" />
+            </ion-modal>
             <ion-item>
               <ion-button
                 @click="confirmOrder"
@@ -186,6 +189,7 @@ import {
   IonTitle,
   IonCheckbox,
   IonInput,
+  IonModal,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { maskito as vMaskito } from "@maskito/vue";
@@ -195,6 +199,16 @@ const cart = ref({});
 const prices = ref({ total: 0 });
 const acceptTOC = ref(false);
 const emailIsValid = ref(false);
+
+const isModalOpen = ref(false);
+
+    const openModal = () => {
+      isModalOpen.value = true;
+    };
+
+    const closeModal = () => {
+      isModalOpen.value = false;
+    };
 
 const order = ref({
   total: 0,
@@ -263,8 +277,6 @@ const confirmOrder = () => {
     ":" +
     date.getSeconds();
   order.value["date"] = currentDate;
-  console.log(order.value);
-  console.log(emailIsValid.value);
   sendDataToDatabase(order.value);
 };
 
