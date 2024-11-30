@@ -15,8 +15,8 @@
                           label="Adresse"
                           :value="inputFields.Adresse"
                           label-placement="floating"
-                          @ionInput="onInput($event)"
-                          ref="ionInputEl"
+                          @ionInput="onAddressInput($event)"
+                          ref="ionAddressInputEl"
                         ></ion-input>
                       </ion-col>
                     </ion-row>
@@ -229,8 +229,8 @@ const confirmOrder = () => {
 
 // Validation section
 // Address
-const ionInputEl = ref();
-const onInput = (ev) => {
+const ionAddressInputEl = ref();
+const onAddressInput = (ev) => {
   const value = ev.target.value;
 
   // Removes non alphanumeric characters
@@ -242,7 +242,7 @@ const onInput = (ev) => {
    */
   inputFields.value.Adresse = filteredValue;
 
-  const inputCmp = ionInputEl.value;
+  const inputCmp = ionAddressInputEl.value;
   if (inputCmp !== undefined) {
     inputCmp.$el.value = filteredValue;
   }
