@@ -158,6 +158,7 @@ const fetchProducts = async () => {
       "http://localhost/ionic-pizzawebsite/api.php"
     );
     products.value = response.data;
+    console.log(products.value);
   } catch (error) {
     console.error("Fehler beim Abrufen der Produkte:", error);
   }

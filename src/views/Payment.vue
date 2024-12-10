@@ -116,16 +116,18 @@
               </ion-list>
             </ion-item>
             <ion-checkbox v-model="acceptTOC"
-              >Ich akzeptiere die <a @click.prevent="openModal">AGBs</a></ion-checkbox
+              >Ich akzeptiere die
+              <a @click.prevent="openModal">AGBs</a></ion-checkbox
             >
             <ion-modal :is-open="isModalOpen" @didDismiss="closeModal">
-                <img src="../../public/img/Edler.png" alt="Luka Karl Elder" />
+              <img src="../../public/img/Edler.png" alt="Luka Karl Elder" />
             </ion-modal>
             <ion-item>
               <ion-button
                 @click="confirmOrder"
                 id="order-button"
                 :disabled="!canOrder()"
+                @click.prevent="openConfirmationModal"
                 >Bestellen</ion-button
               >
             </ion-item>
@@ -171,6 +173,18 @@
           </ion-grid>
         </div>
       </div>
+      <ion-modal
+        :is-open="isConfirmationModalOpen"
+        @didDismiss="closeConfirmationModal"
+      >
+        <div id="iconContainer">
+          <ion-icon :icon="checkmarkCircleOutline" id="confrimIcon"></ion-icon>
+          <ion-label id="confirmationMessage"
+            >Vielen Dank für deine Bestellung! Wir sorgen dafür, dass sie so schnell
+            wie möglich bei dir ist!</ion-label
+          >
+        </div>
+      </ion-modal>
     </ion-content>
   </ion-page>
 </template>
@@ -190,10 +204,19 @@ import {
   IonCheckbox,
   IonInput,
   IonModal,
+  IonIcon,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { maskito as vMaskito } from "@maskito/vue";
 import axios from "axios";
+import { checkmarkCircleOutline } from "ionicons/icons";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const goto = (path) => {
+  router.push(path);
+};
 
 const cart = ref({});
 const prices = ref({ total: 0 });
@@ -202,14 +225,22 @@ const emailIsValid = ref(false);
 
 const isModalOpen = ref(false);
 
-    const openModal = () => {
-      isModalOpen.value = true;
-    };
+const openModal = () => {
+  isModalOpen.value = true;
+};
 
-    const closeModal = () => {
-      isModalOpen.value = false;
-    };
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 
+const isConfirmationModalOpen = ref(false);
+const openConfirmationModal = () => {
+  isConfirmationModalOpen.value = true;
+};
+
+const closeConfirmationModal = () => {
+  isConfirmationModalOpen.value = false;
+};
 const order = ref({
   total: 0,
   date: "",
@@ -278,6 +309,10 @@ const confirmOrder = () => {
     date.getSeconds();
   order.value["date"] = currentDate;
   sendDataToDatabase(order.value);
+  setTimeout(() => {
+    closeConfirmationModal();
+    goto('/home');
+  }, 3000);
 };
 
 // Validation section
@@ -502,5 +537,27 @@ ion-col {
   .payment-information {
     background-color: #1e1e1e;
   }
+}
+
+#iconContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+}
+
+#confrimIcon {
+  color: greenyellow;
+  font-size: 300px;
+  margin-bottom: 20px;
+}
+
+#confirmationMessage {
+  font-size: 18px;
+  color: #333;
+  max-width: 80%;
+  line-height: 1.5;
 }
 </style>
