@@ -308,11 +308,11 @@ const confirmOrder = () => {
     ":" +
     date.getSeconds();
   order.value["date"] = currentDate;
-  sendDataToDatabase(order.value);
+  /*sendDataToDatabase(order.value);
   setTimeout(() => {
     closeConfirmationModal();
     goto('/home');
-  }, 3000);
+  }, 3000);*/
 };
 
 // Validation section
@@ -523,6 +523,13 @@ ion-col {
   margin-right: 16px;
 }
 
+#confirmationMessage {
+  font-size: 18px;
+  color: #333;
+  max-width: 80%;
+  line-height: 1.5;
+}
+
 /* Dark Mode Styles */
 @media (prefers-color-scheme: dark) {
   #shopping-cart {
@@ -536,6 +543,10 @@ ion-col {
 
   .payment-information {
     background-color: #1e1e1e;
+  }
+
+  #confirmationMessage {
+    color: #F8FAFC;
   }
 }
 
@@ -552,12 +563,5 @@ ion-col {
   color: greenyellow;
   font-size: 300px;
   margin-bottom: 20px;
-}
-
-#confirmationMessage {
-  font-size: 18px;
-  color: #333;
-  max-width: 80%;
-  line-height: 1.5;
 }
 </style>
