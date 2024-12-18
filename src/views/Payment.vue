@@ -308,11 +308,11 @@ const confirmOrder = () => {
     ":" +
     date.getSeconds();
   order.value["date"] = currentDate;
-  /*sendDataToDatabase(order.value);
+  sendDataToDatabase(order.value);
   setTimeout(() => {
     closeConfirmationModal();
     goto('/home');
-  }, 3000);*/
+  }, 3000);
 };
 
 // Validation section
